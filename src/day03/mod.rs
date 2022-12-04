@@ -101,7 +101,6 @@ mod tests {
 
     #[test]
     fn test_part_2() {
-        let mut score = 0;
         let rucksacks: Vec<Rucksack> = INPUT.lines().map(Rucksack::from).collect();
         let score: u32 = rucksacks
             .chunks(3)
