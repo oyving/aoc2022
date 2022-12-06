@@ -1,6 +1,6 @@
 use std::collections::VecDeque;
 
-use regex::Regex;
+use regex_macro::regex;
 
 use crate::utils::file_read_lines;
 
@@ -40,7 +40,7 @@ impl Stacks {
 
     }
 
-    fn tops(&self) -> Vec<char> {
+    fn tops(&self) -> String {
         self.stacks.iter()
             .map(|x| x.front().unwrap().clone())
             .collect()
@@ -57,8 +57,9 @@ fn process_line_crate(stacks: &mut Stacks, line: String) {
     }
 }
 
+
 fn parse_line_move(line: &String) -> (u32, u32, u32) {
-    let re = Regex::new(r"move (\d+) from (\d+) to (\d+)$").unwrap();
+    let re = regex!(r"move (\d+) from (\d+) to (\d+)$");
     let c = re.captures(&line).unwrap();
     let count = c.get(1).unwrap().as_str().parse::<u32>().unwrap();
     let from  = c.get(2).unwrap().as_str().parse::<u32>().unwrap();
@@ -79,7 +80,7 @@ fn process_line_move_2(stacks: &mut Stacks, line: String) {
     stacks.move_crates(count as usize, from as usize, to as usize);
 }
 
-fn process_1<T: Iterator<Item = String>>(lines: &mut T) -> Vec<char> {
+fn process_1<T: Iterator<Item = String>>(lines: &mut T) -> String {
     let first_line = lines.next().unwrap();
     let stacks_count = (first_line.len() + 1) / 4;
     let mut stacks = Stacks::new(stacks_count);
@@ -101,7 +102,7 @@ fn process_1<T: Iterator<Item = String>>(lines: &mut T) -> Vec<char> {
     stacks.tops()
 }
 
-fn process_2<T: Iterator<Item = String>>(lines: &mut T) -> Vec<char> {
+fn process_2<T: Iterator<Item = String>>(lines: &mut T) -> String {
     let first_line = lines.next().unwrap();
     let stacks_count = (first_line.len() + 1) / 4;
     let mut stacks = Stacks::new(stacks_count);
@@ -130,9 +131,7 @@ pub fn run() {
     let tops_1 = process_1(&mut lines.iter().map(|x| x.clone()));
     let tops_2 = process_2(&mut lines.iter().map(|x| x.clone()));
 
-    println!("Day05: Output {} and {} ",
-        String::from_iter(tops_1),
-        String::from_iter(tops_2));
+    println!("Day05: Output {} and {} ", tops_1, tops_2);
 }
 
 #[cfg(test)]
@@ -160,10 +159,10 @@ mod tests {
         stacks.add_crate(1, 'A');
         stacks.add_crate(2, 'B');
         stacks.add_crate(3, 'C');
-        assert_eq!("XBC", String::from_iter(stacks.tops()));
+        assert_eq!("XBC", stacks.tops());
 
         stacks.move_crate(1, 2);
-        assert_eq!("AXC", String::from_iter(stacks.tops()));
+        assert_eq!("AXC", stacks.tops());
     }
 
     #[test]
@@ -176,7 +175,7 @@ mod tests {
         stacks.add_crate(3, 'C');
 
         stacks.move_crates(2, 1, 2);
-        assert_eq!("AXC", String::from_iter(stacks.tops()));
+        assert_eq!("AXC", stacks.tops());
     }
 
     #[test]
@@ -185,7 +184,7 @@ mod tests {
             .map(|x| String::from_str(x).unwrap())
             .collect();
         let tops = process_1(&mut lines.into_iter());
-        assert_eq!("CMZ", String::from_iter(tops));
+        assert_eq!("CMZ", tops);
     }
 
     #[test]
@@ -194,6 +193,6 @@ mod tests {
             .map(|x| String::from_str(x).unwrap())
             .collect();
         let tops = process_2(&mut lines.into_iter());
-        assert_eq!("MCD", String::from_iter(tops));
+        assert_eq!("MCD", tops);
     }
 }
